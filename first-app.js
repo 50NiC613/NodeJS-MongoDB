@@ -1,16 +1,21 @@
-var http = require("http");
-const express = require("express");
-const app = express();
-const port = 3000;
-app.use((req, res, next) => {
-  console.log("In the middleware!");
-  next();
-});
-app.use((req, res, next) => {
-  console.log("In another middleware!");
-  res.send("<h1>Hello from express</h1>");
-});
-const server = http.createServer(app);
+const path = require("path");
 
-console.log("Server running at http://127.0.0.1:3000/");
-server.listen(3000);
+const express = require("express");
+const bodyParser = require("body-parser");
+
+const app = express();
+
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
+
+app.use((req, res, next) => {
+  res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
+});
+
+app.listen(3000);
