@@ -12,7 +12,9 @@ RUN . /etc/os-release \
 
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends neofetch 
+    && apt-get -y install --no-install-recommends neofetch
+RUN wget https://github.com/neovim/neovim/releases/download/v0.8.0/nvim-linux64.deb     \
+    && dpkg -i nvim-linux64.deb
 #RUN corepack enable \
 #    && corepack prepare pnpm@latest --activate
 
