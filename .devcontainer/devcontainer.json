@@ -37,5 +37,13 @@
 	},
 	"forwardPorts": [
 		27017
-	]
+	],
+	"portsAttributes": {
+		"3000": {
+			"label": "express"
+		},
+		"27017": {
+			"label": "mongodb"
+		}
+	}
 }
