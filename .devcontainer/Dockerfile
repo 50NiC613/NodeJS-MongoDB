@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/javascript-node:0-16-bullseye
+FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:0-16
 
 # Install MongoDB command line tools - though mongo-database-tools not available on arm64
 ARG MONGO_TOOLS_VERSION=6.0
@@ -13,9 +13,8 @@ RUN . /etc/os-release \
 # [Optional] Uncomment this section to install additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends neofetch 
-RUN corepack enable \
-    && corepack prepare pnpm@latest --activate
-RUN chsh -s /usr/bin/fish
+#RUN corepack enable \
+#    && corepack prepare pnpm@latest --activate
 
 # [Optional] Uncomment if you want to install an additional version of node using nvm
 # ARG EXTRA_NODE_VERSION=10
