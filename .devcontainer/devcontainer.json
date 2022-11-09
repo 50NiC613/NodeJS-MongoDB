@@ -12,7 +12,14 @@
 			"extensions": [
 				"mongodb.mongodb-vscode",
 				"asvetliakov.vscode-neovim",
-				"JulianIaquinandi.nvim-ui-modifier"
+				"JulianIaquinandi.nvim-ui-modifier",
+				"Zignd.html-css-class-completion",
+				"esbenp.prettier-vscode",
+				"rangav.vscode-thunder-client",
+				"formulahendry.auto-close-tag",
+				"christian-kohler.npm-intellisense",
+				"george-alisson.html-preview-vscode",
+				"teabyii.ayu"
 			]
 		}
 	},
