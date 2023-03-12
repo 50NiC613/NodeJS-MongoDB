@@ -21,9 +21,8 @@ app.use(cookieParser());
 //conexion a localhost mongodb
 mongoose.connect('mongodb://127.0.0.1:27017/tienda',
     {"useNewUrlParser": true, "useUnifiedTopology": true})
-    .then(() => console.log('Conexion a la base de datos establecida'))
+    .then(() => console.log('Conexión a la base de datos establecida'))
     .catch(err => console.log(err));
-
 
 //routes
 app.use('/users', usersRouter);

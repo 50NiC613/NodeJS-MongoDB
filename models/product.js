@@ -1,28 +1,58 @@
 //modelo de producto
 const mongoose = require('mongoose');
-const productSchema= mongoose.Schema({
-    id:String,
+const productSchema = mongoose.Schema({
+    id: String,
     name: {
         type: String,
+        required: true
     },
     description: {
         type: String,
+        required: true
     },
-    richDescription:String,
+    richDescription: {
+        type: String,
+        default: ''
+    },
     image: {
         type: String,
+        default: ''
     },
-    images : [ { type: String}] ,
-    brand:String,
+    images: [{type: String}],
+    brand: {
+        tyoe: String, default: ''
+    },
     price: {
         type: Number,
-        required : true
+        default: 0
     },
-    category : String,
-    countInStock: Number,
-    ratin : Number,
-    isFeatured:Boolean,
-    dateCreated: Date
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true
+    },
+    countInStock: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 255
+    },
+    rating: {
+        type: Number,
+        default: 0
+    },
+    numReviews: {
+        type: Number,
+        default: 0
+    },
+    isFeatured: {
+        type: Boolean,
+        default: false
+    },
+    dateCreated: {
+        type: Date,
+        default: Date.now()
+    }
 })
 // Exportar el modelo de producto
 exports.Product = mongoose.model('Product', productSchema)
