@@ -52,11 +52,21 @@ router.put("/:id", function (req, res) {
   res.send(product);
 });
 /* DELETE Eliminar un producto */
-router.delete("/:id", function (req, res) {
-  let id = req.params.id;
-  let product = products.find((product) => product.id === id);
-  products.splice(products.indexOf(product), 1);
-  res.send(product);
+router.delete("/:id", async function (req, res) {
+  await Product.findByIdAndDelete(req.params.id).then((product) => {
+    res
+      .status(200)
+      .json({
+        message: "Producto eliminado",
+        product: product,
+      })
+      .catch((err) => {
+        res.status(500).json({
+          message: err.message,
+          error: err,
+        });
+      });
+  });
 });
 
 module.exports = router;
