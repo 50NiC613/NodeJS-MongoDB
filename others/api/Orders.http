@@ -1,0 +1,2 @@
+## Listar Ordenes
+GET  http://localhost:3000/orders HTTP/1.1
