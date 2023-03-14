@@ -3,11 +3,16 @@ const { isValidObjectId } = require("mongoose");
 const router = express.Router();
 const { Product } = require("../models/product");
 const { Category } = require("../models/category");
-/* GET Listar los productos
+/* GET Listar los productos populate category y ?categories query
  */
 
 router.get("/", async (req, res) => {
-  let products = await Product.find();
+  let filter = {};
+  if (req.query.categories) {
+    filter = { category: req.query.categories.split(",") };
+  }
+
+  let products = await Product.find(filter).populate("category");
   if (!products.length) {
     res.status(500).json({ success: false });
   }
@@ -133,6 +138,61 @@ router.delete("/:id", async (req, res) => {
           error: err,
         });
       });
+  });
+});
+// obtener cantidad de productos
+router.get("get/count", async (req, res) => {
+  const productCount = Product.countDocuments((count) => count);
+  if (!productCount) {
+    res.status(500).json({ success: false });
+  }
+  res.status(200).json({
+    message: "Productos totales",
+  });
+  // obtener productos destacados
+  router.get("/featured/:count", async (req, res) => {
+    const count = req.params.count ? req.params.count : 0;
+    const products = await Product.find({ isFeatured: true }).limit(+count);
+    if (!products) {
+      res.status(500).json({ success: false });
+    }
+    res.status(200).json({
+      message: "Productos destacados",
+      products: products,
+    });
+  });
+});
+// obtener productos por categoria
+router.get("/category/:category", async (req, res) => {
+  const products = await Product.find({ category: req.params.category });
+  if (!products) {
+    res.status(500).json({ success: false });
+  }
+  res.status(200).json({
+    message: "Productos por categoria",
+    products: products,
+  });
+});
+// obtener productos por marca
+router.get("/brand/:brand", async (req, res) => {
+  const products = await Product.find({ brand: req.params.brand });
+  if (!products) {
+    res.status(500).json({ success: false });
+  }
+  res.status(200).json({
+    message: "Productos por marca",
+    products: products,
+  });
+});
+// obtener productos por precio
+router.get("/price/:price", async (req, res) => {
+  const products = await Product.find({ price: req.params.price });
+  if (!products) {
+    res.status(500).json({ success: false });
+  }
+  res.status(200).json({
+    message: "Productos por precio",
+    products: products,
   });
 });
 

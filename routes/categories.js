@@ -53,7 +53,18 @@ router.put("/:id", async (req, res) => {
   if (!categoria) {
     res.status(400).json({ message: "No existe la categoria" });
   }
-  res.status(200).json(categoria);
+  // DELETE eliminar categoria
+  router.delete("/:id", async (req, res) => {
+    // validar que es valido el id
+    let id = null;
+    if (isValidObjectId(req.params.id)) {
+      id = req.params.id;
+    }
+    const categoria = await Category.findByIdAndDelete(id);
+    if (!categoria) {
+      res.status(400).json({ message: "No existe la categoria" });
+    }
+    res.status(200).json(categoria);
+  });
 });
-
 module.exports = router;
