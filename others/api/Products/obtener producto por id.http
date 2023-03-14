@@ -1,2 +1,2 @@
 # Obtener producto por su id
-GET  http://localhost:3000/products/640cdf8fa8ddaa6187cf694 HTTP/1.1
+GET  http://localhost:3000/products/64108d85416fd424c00a313e HTTP/1.1
