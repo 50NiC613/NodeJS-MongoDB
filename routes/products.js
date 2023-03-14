@@ -65,15 +65,7 @@ router.post("/", async (req, res) => {
 });
 
 /* PUT Actualizar un producto */
-router.put("/:id", function (req, res) {
-  let id = req.params.id;
-  let product = products.find((product) => product.id === id);
-  product.name = req.body.name;
-  product.price = req.body.price;
-  product.description = req.body.description;
-  product.image = req.body.image;
-  res.send(product);
-});
+router.put("/:id", function (req, res) {});
 /* DELETE Eliminar un producto */
 router.delete("/:id", async (req, res) => {
   await Product.findByIdAndDelete(req.params.id).then((product) => {
