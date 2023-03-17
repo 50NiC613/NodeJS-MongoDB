@@ -1,2 +1,0 @@
-# Listar productos
-GET  http://localhost:3000/products HTTP/1.1
