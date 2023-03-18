@@ -1,53 +1,110 @@
 const express = require("express");
-const { isValidObjectId } = require("mongoose");
 const router = express.Router();
-const { Usuario } = require("../models/users");
-//GET Listar usuarios async
+const { User } = require("../models/users");
+const {isValidObjectId} = require("mongoose");
+const bcrypt = require("bcryptjs")
+/* GET Listar els categorías */
 router.get("/", async (req, res) => {
-  const listaUsuarios = await Usuario.find();
-  if (!listaUsuarios)
-    res.status(400).json({
-      message: "no hay usuarios",
-    });
-  res.status(200).json({
-    message: "Se encontraron los usuarios",
-    usuarios: listaUsuarios,
-  });
+  const lista = await User.find().select('-passwordHash');
+  if (!lista) {
+    res.status(400).json({ message: "No hay usuarios" });
+  }
+  res.status(200).json(lista);
 });
-// POST Crear usuario async
+// GET obtener usuario por su id
+router.get("/:id", async (req, res) => {
+  // validar que es válido el ID
+  let id = null;
+  if (isValidObjectId(req.params.id)) {
+    id = req.params.id;
+  }
+  const usuario = await User.findById(id).select('-passwordHash');
+  if (!usuario) {
+    res.status(400).json({ message: "No existe el usuario" });
+  }
+  res.status(200).json(usuario);
+});
+// POST crear usuario
 router.post("/", async (req, res) => {
-  const usuario = req.body;
-  const usuarioNuevo = await Usuario.create(usuario);
-  if (!usuarioNuevo)
-    res.status(400).json({
-      message: "Error al crear usuario",
-    });
-  res.status(200).json({
-    message: "Se creo el usuario",
-    usuario: usuarioNuevo,
+  const usuarioviejo = await User.findById();
+  let newpass
+  if (req.params.password){
+    newpass = bcrypt.hashSync(req.params.password, 10);
+  }
+  else {
+      newpass= usuarioviejo.passwordHash
+  }
+  const usuario = new User({
+    name: req.body.name,
+    email: req.body.email,
+    passwordHash: newpass,
+    street:req.body.street,
+    apartment : req.body.apartment,
+    city : req.body.city,
+    zip : req.body.zip,
+    country : req.body.country,
+    photo : req.body.photo,
+    isAdmin : req.body.isAdmin,
   });
+  await usuario.save();
+  res.status(200).json(usuario);
 });
-// PUT Actualizar usuario async
+// PUT actualizar usuario
 router.put("/:id", async (req, res) => {
-  //validar id
-  if (!isValidObjectId(req.params.id))
-    return res.status(400).json({ message: "El id es invalido" });
-  const usuario = req.body;
-  const usuarioNuevo = await Usuario.findByIdAndUpdate(req.params.id, usuario, {
-    new: true,
-  });
-  res.status(200).json({
-    message: "Se actualizo el usuario",
-    usuario: usuarioNuevo,
+  // validar que es válido el ID
+  let id = null;
+  if (isValidObjectId(req.params.id)) {
+    id = req.params.id;
+  }
+
+  const usuario = await User.findByIdAndUpdate(
+      id,
+      {
+        name: req.body.name,
+        email: req.body.email,
+        passwordHash: bcrypt.hashSync( req.body.password, 10),
+        street:req.body.street,
+        apartment : req.body.apartment,
+        city : req.body.city,
+        zip : req.body.zip,
+        country : req.body.country,
+        photo : req.body.photo,
+        isAdmin : req.body.isAdmin,
+      },
+      { new: true }
+  );
+  // si no se actualizo
+  if (!usuario) {
+    res.status(400).json({ message: "No existe el usuario" });
+  }
+  // DELETE eliminar usuario
+  router.delete("/:id", async (req, res) => {
+    // validar que es válido el ID
+    let id = null;
+    if (isValidObjectId(req.params.id)) {
+      id = req.params.id;
+    }
+    const usuario = await User.findByIdAndDelete(id);
+    if (!usuario) {
+      res.status(400).json({ message: "No existe el usuario" });
+    }
+    res.status(200).json(usuario);
   });
 });
-// DELETE Borrar usuario async
-router.delete("/:id", async (req, res) => {
-  //validar id
-  if (!isValidObjectId(req.params.id))
-    return res.status(400).json({ message: "El id es invalido" });
-  const usuario = await Usuario.findByIdAndRemove(req.params.id);
-  if (!usuario) res.status(400).json({ message: "El usuario no existe" });
-  res.status(200).json({ message: "Se borró el usuario" });
-});
+// ruta de login
+router.post("/login", async (req, res) => {
+  const usuario = await User.findOne({ email: req.body.email });
+  if (!usuario) {
+    res.status(400).json({ message: "El usuario no existe" });
+  }
+  const validPassword = bcrypt.compareSync(
+    req.body.password,
+    usuario.passwordHash
+  );
+  if (!validPassword) {
+    res.status(400).json({ message: "Contraseña incorrecta" });
+  }
+  res.status(200).json(usuario);
+})
+
 module.exports = router;

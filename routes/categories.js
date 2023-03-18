@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 });
 // PUT actualizar categoria
 router.put("/:id", async (req, res) => {
-  // validar que es valido el id
+  // validar que es válido el ID
   let id = null;
   if (isValidObjectId(req.params.id)) {
     id = req.params.id;
@@ -55,7 +55,7 @@ router.put("/:id", async (req, res) => {
   }
   // DELETE eliminar categoria
   router.delete("/:id", async (req, res) => {
-    // validar que es valido el id
+    // validar que es válido el ID
     let id = null;
     if (isValidObjectId(req.params.id)) {
       id = req.params.id;

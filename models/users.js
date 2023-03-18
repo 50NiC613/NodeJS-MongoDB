@@ -17,12 +17,23 @@ const userSchema= mongoose.Schema({
     apartment:String,
     city : String,
     zip : String,
-    count : String,
+    country : String,
     photo : Number,
         isAdmin : {
         type: Boolean,
         default: false
     }
 })
+productSchema.virtual("id").get(function () {
+    return this._id.toHexString();
+});
+productSchema.set("toJSON", {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        delete ret._id;
+        delete ret.__v;
+    },
+});
 // Exportar el modelo de producto
 exports.User = mongoose.model('User', userSchema)

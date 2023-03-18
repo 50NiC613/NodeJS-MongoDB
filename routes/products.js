@@ -72,7 +72,7 @@ router.get("/", async (req, res) => {
   }
 
   let products = await Product.find(filter).populate("category");
-  if (!products.length) {
+  if (!products) {
     res.status(500).json({ success: false });
   }
   res.send(products);
@@ -80,7 +80,7 @@ router.get("/", async (req, res) => {
 
 /* GET producto por ID */
 router.get("/:id", async (req, res) => {
-  // validar que es valido el id
+  // validar que es válido el ID
   let id = null;
   if (isValidObjectId(req.params.id)) {
     id = req.params.id;
@@ -88,7 +88,7 @@ router.get("/:id", async (req, res) => {
   let product = await Product.findById(id);
   if (product) {
     res.status(200).json({
-      message: "Se encontro el producto",
+      message: "Se encontró el producto",
       product: product,
     });
   } else {
@@ -123,20 +123,13 @@ router.post("/", async (req, res) => {
     isFeatured: req.body.isFeatured,
     dateCreated: req.body.dateCreated,
   });
-  await product
-    .save(product)
-    .then(() => {
-      res.status(200).json({
-        message: "Product agregado",
-        product: product,
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        message: err.message,
-        error: err,
-      });
-    });
+  await product.save();
+  if(!product){
+    res.status(400).json({message : "No se pudo crear el usuario"})
+  }
+  else {
+      res.status(200).json({message : "Se creo el usuario", product:product })
+  }
 });
 
 /* PUT Actualizar un producto */
