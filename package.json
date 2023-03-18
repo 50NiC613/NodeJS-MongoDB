@@ -1,9 +1,25 @@
 {
-  "dependencies": {
-    "express": "^4.18.2",
-    "nodemon": "^2.0.20"
-  },
-  "scripts": {
-    "start": "nodemon first-app.js"
-  }
+    "name": "tiendaexpress",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js"
+    },
+    "dependencies": {
+        "@types/mongoose": "^5.11.97",
+        "bcryptjs": "^2.4.3",
+        "cookie-parser": "~1.4.6",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "express-jwt": "^8.4.1",
+        "http-errors": "^2.0.0",
+        "jsonwebtoken": "^9.0.0",
+        "mongoose": "^7.0.2",
+        "morgan": "^1.10.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.21"
+    }
 }
