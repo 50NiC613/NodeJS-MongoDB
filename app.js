@@ -10,10 +10,17 @@ const productsRouter = require('./routes/products')
 const categoriesRouter = require('./routes/categories')
 const ordersRouter = require('./routes/orders')
 const app = express();
+require('dotenv/config');
+const errorHandler = require('./helpers/error-handler');
+const authJwt=require('/helpers/jwt')
 
+
+//middlewares
 app.use(cors());
+app.use(errorHandler());
 app.options('*',cors);
 app.use(logger('dev'));
+app.use(authJwt());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

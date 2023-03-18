@@ -3,6 +3,7 @@ const router = express.Router();
 const { User } = require("../models/users");
 const {isValidObjectId} = require("mongoose");
 const bcrypt = require("bcryptjs")
+const jwt = require ('jsonwebtoken')
 /* GET Listar els categorías */
 router.get("/", async (req, res) => {
   const lista = await User.find().select('-passwordHash');
@@ -25,7 +26,7 @@ router.get("/:id", async (req, res) => {
   res.status(200).json(usuario);
 });
 // POST crear usuario
-router.post("/", async (req, res) => {
+router.post("/register", async (req, res) => {
   const usuarioviejo = await User.findById();
   let newpass
   if (req.params.password){
@@ -104,7 +105,32 @@ router.post("/login", async (req, res) => {
   if (!validPassword) {
     res.status(400).json({ message: "Contraseña incorrecta" });
   }
-  res.status(200).json(usuario);
+  const token = jwt.sign(
+      {
+        userId: usuario.id,
+        isAdmin:usuario.isAdmin
+
+      }, 'secret',
+      {
+        expiresIn :'1d',
+      }
+  )
+
+  res.status(200).json({
+    message : 'Se realizo el login correctamente',
+    user:usuario.email,
+    token:token
+  });
 })
+router.get("get/count", async (req, res) => {
+  const userCount = User.countDocuments((count) => count);
+  if (!userCount) {
+    res.status(500).json({ success: false });
+  }
+  res.status(200).json({
+    message: "Usuarios totales",
+    userCount:userCount
+  });
+});
 
 module.exports = router;
