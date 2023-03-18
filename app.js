@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-//conexion a localhost mongodb
+//connexion a localhost mongodb
 mongoose.connect('mongodb://127.0.0.1:27017/tienda',
     {"useNewUrlParser": true, "useUnifiedTopology": true})
     .then(() => console.log('Conexión a la base de datos establecida'))
@@ -30,7 +30,7 @@ app.use('/products', productsRouter);
 app.use('/orders', ordersRouter);
 app.use('/categories', categoriesRouter);
 
-// catch eror 404 y dar la respuesta
+// catch error 404 y dar la respuesta
 app.use(function(req, res, next) {
   next(createError(404));
 });

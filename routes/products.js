@@ -3,7 +3,7 @@ const { isValidObjectId } = require("mongoose");
 const router = express.Router();
 const { Product } = require("../models/product");
 const { Category } = require("../models/category");
-/* GET Listar los productos populate category y ?categories query
+/* GET Listar los productos populate category
  */
 // obtener cantidad de productos
 router.get("get/count", async (req, res) => {
@@ -16,14 +16,14 @@ router.get("get/count", async (req, res) => {
   });
 });
 
-// obtener productos por categoria
+// obtener productos por categoría
 router.get("/category/:category", async (req, res) => {
   const products = await Product.find({ category: req.params.category });
   if (!products) {
     res.status(500).json({ success: false });
   }
   res.status(200).json({
-    message: "Productos por categoria",
+    message: "Productos por categoría",
     products: products,
   });
 });
@@ -92,21 +92,21 @@ router.get("/:id", async (req, res) => {
       product: product,
     });
   } else {
-    res.status(500).json({ message: "No se encontro el producto por id" });
+    res.status(500).json({ message: "No se encontró el producto por id" });
   }
 });
 
 /* POST Crear un nuevo producto del modelo Product*/
 router.post("/", async (req, res) => {
-  // validar que es valido el id
+  // validar que es válido el ID
   let id = null;
   if (isValidObjectId(req.params.id)) {
     id = req.params.id;
   }
-  //validar categoria
+  //validar categoría
   let category = await Category.findById(id);
   if (!category) {
-    res.status(500).json({ message: "No se encontro la categoria" });
+    res.status(500).json({ message: "No se encontró la categoría" });
   }
 
   let product = new Product({
@@ -134,15 +134,15 @@ router.post("/", async (req, res) => {
 
 /* PUT Actualizar un producto */
 router.put("/:id", async (req, res) => {
-  // validar que es valido el id
+  // validar que es válido el ID
   let id = null;
   if (isValidObjectId(req.params.id)) {
     id = req.params.id;
   }
-  //Validar categoria
+  //Validar categoría
   let category = await Category.findById(req.body.category);
   if (!category) {
-    res.status(500).json({ message: "No se encontro la categoria" });
+    res.status(500).json({ message: "No se encontró la categoría" });
   }
   let product = await Product.findByIdAndUpdate(
     id,
@@ -164,7 +164,7 @@ router.put("/:id", async (req, res) => {
   );
   //si no se actualizo
   if (!product) {
-    res.status(500).json({ message: "No se encontro el producto por id" });
+    res.status(500).json({ message: "No se encontró el producto por id" });
   }
   res.status(200).json({
     message: "Producto actualizado",
@@ -173,7 +173,7 @@ router.put("/:id", async (req, res) => {
 });
 /* DELETE Eliminar un producto */
 router.delete("/:id", async (req, res) => {
-  // validar que es valido el id
+  // validar que es válido el ID
   let id = null;
   if (isValidObjectId(req.params.id)) {
     id = req.params.id;
