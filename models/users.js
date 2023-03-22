@@ -1,7 +1,6 @@
 //modelo de usuario
 const mongoose = require('mongoose');
 const userSchema= mongoose.Schema({
-    id:String,
     name: {
         type: String,
     },
@@ -24,10 +23,10 @@ const userSchema= mongoose.Schema({
         default: false
     }
 })
-productSchema.virtual("id").get(function () {
+userSchema.virtual("id").get(function () {
     return this._id.toHexString();
 });
-productSchema.set("toJSON", {
+userSchema.set("toJSON", {
     virtuals: true,
     versionKey: false,
     transform: function (doc, ret) {

@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/orders");
+const { Category } = require("../models/category");
+const { OrderItem } = require("../models/order-item");
 /* GET Listar las órdenes */
 router.get("/", function (req, res) {
   res.send("respond with a resource");
@@ -8,24 +10,36 @@ router.get("/", function (req, res) {
 /**
  * POST Crear una orden async
  */
-router.post("/", async function (req, res) {
-  const order = new Order(req.body);
-  await order
-    .save()
-    .then((orden) => {
-      res.status(
-        (200).json({
-          message: "Orden creada",
-          order: orden,
-        })
-      );
-    })
-    .catch((err) => {
-      res.status(500).json({
-        message: err.message,
-        error: err,
+router.post("/", async (req, res) => {
+  const orderItemsIds = Promise.all(
+    req.body.orderItems.map(async (orderItem) => {
+      let newOrderItem = new OrderItem({
+        quantity: orderItem.quantity,
+        product: orderItem.product,
       });
-    });
+      newOrderItem = await newOrderItem.save();
+      return newOrderItem._id;
+    })
+  );
+  const orderItemsResolved = await orderItemsIds;
+  const order = new Order({
+    orderItems: orderItemsResolved,
+    shippingAddress1: req.body.shippingAddress1,
+    shippingAddress2: req.body.shippingAddress2,
+    city: req.body.city,
+    zip: req.body.zip,
+    country: req.body.country,
+    phone: req.body.phone,
+    status: req.body.status,
+    totalPrice: req.body.totalPrice,
+    user: req.body.user,
+  });
+  order = await order.save();
+
+  if (!order) {
+    res.status(400).json({ message: "No se pudo crear la orden" });
+  }
+  res.status(200).json(order);
 });
 /**
  * PUT Actualizar una orden async

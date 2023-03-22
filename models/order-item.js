@@ -2,9 +2,11 @@
 const mongoose = require('mongoose');
 const orderItemsSchema = mongoose.Schema(
     {
-     id:String,
-     product : String,
-     quantity : Number
+     product : {
+         type : mongoose.Schema.Types.ObjectId,
+     ref:'Product'},
+     quantity : {type:Number,
+     required : true}
     }
 )
-exports.OrderItems= mongoose.model('OrderItems', orderItemsSchema);
+exports.OrderItem= mongoose.model('OrderItem', orderItemsSchema);
