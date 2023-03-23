@@ -1,11 +1,31 @@
 const express = require("express");
 const router = express.Router();
-const Order = require("../models/orders");
-const { Category } = require("../models/category");
+const { Order } = require("../models/orders");
 const { OrderItem } = require("../models/order-item");
 /* GET Listar las órdenes */
-router.get("/", function (req, res) {
-  res.send("respond with a resource");
+router.get("/", async (req, res) => {
+  const orderList = await Order.find().populate("user");
+  if (!orderList) {
+    res.status(404).json({ message: "No hay ordenes" });
+  }
+  res.status(200).json(orderList);
+});
+
+/* GET Detalle de una orden */
+router.get("/:id", async (req, res) => {
+  const order = await Order.findById(req.params.id)
+    .populate("user", "name")
+    .populate({
+      path: "orderItems",
+      populate: {
+        path: "product",
+        populate: "category",
+      },
+    });
+  if (!order) {
+    res.status(404).json({ message: "No hay orden" });
+  }
+  res.status(200).json(order);
 });
 /**
  * POST Crear una orden async
@@ -22,6 +42,16 @@ router.post("/", async (req, res) => {
     })
   );
   const orderItemsResolved = await orderItemsIds;
+  const totalPrices = await Promise.all(
+    orderItemsResolved.map(async (orderItemsId) => {
+      const orderItem = await OrderItem.findById(orderItemsId).populate(
+        "product",
+        "name"
+      );
+      return orderItem.product.price * orderItem.quantity;
+    })
+  );
+  console.log(totalPrices);
   const order = new Order({
     orderItems: orderItemsResolved,
     shippingAddress1: req.body.shippingAddress1,
@@ -31,7 +61,7 @@ router.post("/", async (req, res) => {
     country: req.body.country,
     phone: req.body.phone,
     status: req.body.status,
-    totalPrice: req.body.totalPrice,
+    totalPrice: totalPrice,
     user: req.body.user,
   });
   order = await order.save();
@@ -45,14 +75,37 @@ router.post("/", async (req, res) => {
  * PUT Actualizar una orden async
  */
 router.put("/:id", async (req, res) => {
-  const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
+  const order = await Order.findByIdAndUpdate(
+    req.params.id,
+    { status: req.body.status },
+    {
+      new: true,
+    }
+  );
   if (order) {
     res.status(200).json({ message: "Orden actualizada", order: order });
   } else {
     res.status(500).json({ message: "No se encontro esa orden" });
   }
+});
+
+/**DELETE borrar orden*/
+router.delete("/:id", async (req, res) => {
+  const order = await Order.findByIdAndDelete(req.params.id)
+    .then((orden) => {
+      orden.ordeItems.map(async (itemaborrar) => {
+        await OrderItem.findByIdAndDelete(itemaborrar);
+      });
+      res.status(200).json({
+        message: "Orden eliminada",
+        order: orden,
+      });
+    })
+    .catch((err) => {
+      res.status(400).json({
+        message: "No se encontro esa orden",
+      });
+    });
 });
 
 module.exports = router;
