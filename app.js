@@ -20,6 +20,7 @@ app.use(errorHandler);
 app.options("*", cors);
 app.use(logger("dev"));
 app.use(authJwt());
+app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
