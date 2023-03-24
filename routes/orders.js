@@ -107,5 +107,52 @@ router.delete("/:id", async (req, res) => {
       });
     });
 });
+//GET ventas totales
+router.get("/get/totalsales", async (req, res) => {
+  const orders = await Order.aggregate([
+    {
+      $group: {
+        _id: null,
+        total: { $sum: "$totalPrice" },
+      },
+    },
+  ]);
+  if (!orders) {
+    res.status(500).json({ message: "No se encontro ordenes" });
+  } else {
+    res
+      .status(200)
+      .json({ message: "ventas totales", orders: orders.pop().totalsales });
+  }
+});
+
+//GET contar cantidad de ordenes
+router.get("/get/count", async (req, res) => {
+  const count = await Order.countDocuments();
+  if (!count) {
+    res.status(500).json({ message: "No se encontro ordenes" });
+  } else {
+    res.status(200).json({ message: "cantidad de ordenes", count: count });
+  }
+});
+
+//GET ordenes de un usuario
+router.get("/get/orders/:userId", async (req, res) => {
+  const userId = req.params.userId;
+  const orders = await Order.find({ userId })
+    .populate({
+      path: "orderItems",
+      populate: {
+        path: "product",
+        populate: "category",
+      },
+    })
+    .sort({ dateOrdered: -1 });
+  if (!orders) {
+    res.status(500).json({ message: "No se encontro ordenes" });
+  } else {
+    res.status(200).json({ message: "ordenes de usuario", orders: orders });
+  }
+});
 
 module.exports = router;
