@@ -168,12 +168,25 @@ router.post("/", upload.single("image"), async (req, res) => {
 });
 
 /* PUT Actualizar un producto */
-router.put("/:id", async (req, res) => {
+router.put("/:id", upload.single("image"), async (req, res) => {
   // validar que es válido el ID
   let id = null;
-  if (isValidObjectId(req.params.id)) {
-    id = req.params.id;
+  if (!isValidObjectId(req.params.id)) {
+    return res.status(400).json({ message: "El id es invalido" });
   }
+  const productoviejo = await Product.findById(id);
+  if (!productoviejo) {
+    return res.status(404).json({ message: "No se encontro el producto" });
+  }
+  // validar que el producto no tenga una imagen
+  if (req.file) {
+    const fileName = req.file.filename;
+    const basePath = `${req.protocol}://${req.get(
+      "host"
+    )}/public/uploads/${fileName}`;
+    productoviejo.image = basePath;
+  }
+
   //Validar categoría
   let category = await Category.findById(req.body.category);
   if (!category) {
@@ -185,7 +198,7 @@ router.put("/:id", async (req, res) => {
       name: req.body.name,
       price: req.body.price,
       description: req.body.description,
-      image: req.body.image,
+      image: productoviejo.image,
       images: req.body.images,
       brand: req.body.brand,
       category: req.body.category,
@@ -205,6 +218,39 @@ router.put("/:id", async (req, res) => {
   }
   return res.status(200).json({
     message: "Producto actualizado",
+    product: product,
+  });
+});
+
+// PUT subir galeria de fotos al producto
+router.put("/galeria/:id", upload.array("images", 10), async (req, res) => {
+  // validar que es válido el ID
+  let id = null;
+  if (isValidObjectId(req.params.id)) {
+    res.status(400).json({ message: "no se valido el id" });
+  }
+  const files = req.files;
+  let imagePaths = [];
+  const basePath = `${req.protocol}://${req.get(
+    "host"
+  )}/public/uploads/${fileName}`;
+  if (files) {
+    files.map(async (file) => {
+      imagePaths.push(`${basePath}${file.fileName}`);
+    });
+  }
+  const product = await Product.findByIdAndUpdate(
+    req.params.id,
+    {
+      images: imagePaths,
+    },
+    { new: true }
+  );
+  if (!product) {
+    return res.status(400).json({ message: "No se actualizo el producto" });
+  }
+  return res.status(200).json({
+    message: "se actualizo el producto",
     product: product,
   });
 });
