@@ -6,9 +6,9 @@ const { OrderItem } = require("../models/order-item");
 router.get("/", async (req, res) => {
   const orderList = await Order.find().populate("user");
   if (!orderList) {
-    res.status(404).json({ message: "No hay ordenes" });
+    return res.status(404).json({ message: "No hay ordenes" });
   }
-  res.status(200).json(orderList);
+  return res.status(200).json(orderList);
 });
 
 /* GET Detalle de una orden */
@@ -23,9 +23,9 @@ router.get("/:id", async (req, res) => {
       },
     });
   if (!order) {
-    res.status(404).json({ message: "No hay orden" });
+    return res.status(404).json({ message: "No hay orden" });
   }
-  res.status(200).json(order);
+  return res.status(200).json(order);
 });
 /**
  * POST Crear una orden async
@@ -67,9 +67,9 @@ router.post("/", async (req, res) => {
   order = await order.save();
 
   if (!order) {
-    res.status(400).json({ message: "No se pudo crear la orden" });
+    return res.status(400).json({ message: "No se pudo crear la orden" });
   }
-  res.status(200).json(order);
+  return res.status(200).json(order);
 });
 /**
  * PUT Actualizar una orden async
@@ -83,9 +83,9 @@ router.put("/:id", async (req, res) => {
     }
   );
   if (order) {
-    res.status(200).json({ message: "Orden actualizada", order: order });
+    return res.status(200).json({ message: "Orden actualizada", order: order });
   } else {
-    res.status(500).json({ message: "No se encontro esa orden" });
+    return res.status(500).json({ message: "No se encontro esa orden" });
   }
 });
 
@@ -96,13 +96,13 @@ router.delete("/:id", async (req, res) => {
       orden.ordeItems.map(async (itemaborrar) => {
         await OrderItem.findByIdAndDelete(itemaborrar);
       });
-      res.status(200).json({
+      return res.status(200).json({
         message: "Orden eliminada",
         order: orden,
       });
     })
     .catch((err) => {
-      res.status(400).json({
+      return res.status(400).json({
         message: "No se encontro esa orden",
       });
     });
@@ -118,7 +118,7 @@ router.get("/get/totalsales", async (req, res) => {
     },
   ]);
   if (!orders) {
-    res.status(500).json({ message: "No se encontro ordenes" });
+    return res.status(500).json({ message: "No se encontro ordenes" });
   } else {
     res
       .status(200)
@@ -130,9 +130,11 @@ router.get("/get/totalsales", async (req, res) => {
 router.get("/get/count", async (req, res) => {
   const count = await Order.countDocuments();
   if (!count) {
-    res.status(500).json({ message: "No se encontro ordenes" });
+    return res.status(500).json({ message: "No se encontro ordenes" });
   } else {
-    res.status(200).json({ message: "cantidad de ordenes", count: count });
+    return res
+      .status(200)
+      .json({ message: "cantidad de ordenes", count: count });
   }
 });
 
@@ -149,9 +151,11 @@ router.get("/get/orders/:userId", async (req, res) => {
     })
     .sort({ dateOrdered: -1 });
   if (!orders) {
-    res.status(500).json({ message: "No se encontro ordenes" });
+    return res.status(500).json({ message: "No se encontro ordenes" });
   } else {
-    res.status(200).json({ message: "ordenes de usuario", orders: orders });
+    return res
+      .status(200)
+      .json({ message: "ordenes de usuario", orders: orders });
   }
 });
 

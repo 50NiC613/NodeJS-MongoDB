@@ -9,6 +9,6 @@ function errorHandler(err, req, res, next) {
     return res.status(500).json({ message: err.message });
   }
   // si no es ninguno de los anteriores
-  res.status(500).json({ message: "Internal server error" });
+  return res.status(500).json({ message: "Internal server error" });
 }
 module.exports = errorHandler;

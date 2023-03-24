@@ -5,9 +5,9 @@ const { Category } = require("../models/category");
 router.get("/", async (req, res) => {
   const lista = await Category.find();
   if (!lista) {
-    res.status(400).json({ message: "No hay categorías" });
+    return res.status(400).json({ message: "No hay categorías" });
   }
-  res.status(200).json(lista);
+  return res.status(200).json(lista);
 });
 // GET obtener categoria por su id
 router.get("/:id", async (req, res) => {
@@ -18,9 +18,9 @@ router.get("/:id", async (req, res) => {
   }
   const categoria = await Category.findById(id);
   if (!categoria) {
-    res.status(400).json({ message: "No existe la categoria" });
+    return res.status(400).json({ message: "No existe la categoria" });
   }
-  res.status(200).json(categoria);
+  return res.status(200).json(categoria);
 });
 // POST crear categoria
 router.post("/", async (req, res) => {
@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
     Image: req.body.image,
   });
   await categoria.save();
-  res.status(200).json(categoria);
+  return res.status(200).json(categoria);
 });
 // PUT actualizar categoria
 router.put("/:id", async (req, res) => {
@@ -51,7 +51,7 @@ router.put("/:id", async (req, res) => {
   );
   // si no se actualizo
   if (!categoria) {
-    res.status(400).json({ message: "No existe la categoria" });
+    return res.status(400).json({ message: "No existe la categoria" });
   }
   // DELETE eliminar categoria
   router.delete("/:id", async (req, res) => {
@@ -62,9 +62,9 @@ router.put("/:id", async (req, res) => {
     }
     const categoria = await Category.findByIdAndDelete(id);
     if (!categoria) {
-      res.status(400).json({ message: "No existe la categoria" });
+      return res.status(400).json({ message: "No existe la categoria" });
     }
-    res.status(200).json(categoria);
+    return res.status(200).json(categoria);
   });
 });
 module.exports = router;
