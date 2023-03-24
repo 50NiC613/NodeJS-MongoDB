@@ -20,6 +20,7 @@ app.use(errorHandler);
 app.options("*", cors);
 app.use(logger("dev"));
 app.use(authJwt());
+app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -50,7 +51,7 @@ app.use(function (err, req, res) {
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};
   // render de la página de error
-  res.status(err.status || 500);
+  return res.status(err.status || 500);
   res.render("error");
 });
 
