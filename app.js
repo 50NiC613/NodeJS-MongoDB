@@ -14,10 +14,12 @@ require("dotenv/config");
 const errorHandler = require("./helpers/error-handler");
 const authJwt = require("./helpers/jwt");
 
-//middlewares
+// cors
 app.use(cors());
+
+//middlewares
+
 app.use(errorHandler);
-app.options("*", cors);
 app.use(logger("dev"));
 app.use(authJwt());
 app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
@@ -47,6 +49,7 @@ app.use(function (req, res, next) {
 
 //error handler
 app.use(function (err, req, res) {
+  rs;
   // poner los locals que solo den error en desarrollo
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};

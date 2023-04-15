@@ -27,10 +27,13 @@ router.post("/", async (req, res) => {
   const categoria = new Category({
     color: req.body.color,
     icon: req.body.icon,
-    Image: req.body.image,
+    name: req.body.name,
   });
   await categoria.save();
-  return res.status(200).json(categoria);
+  return res.status(200).json({
+    success: true,
+    category: categoria,
+  });
 });
 // PUT actualizar categoria
 router.put("/:id", async (req, res) => {
